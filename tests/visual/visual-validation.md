@@ -1,8 +1,11 @@
 # 视觉验收规范
 
-本文件定义 DecisionDesk 的视觉验收测试套件。执行需以下环境：
-- Playwright (`npx playwright install chromium`)
-- DecisionDesk 开发服务器运行中 (`pnpm dev`)
+本文件定义 DecisionDesk 的视觉验收测试套件。当前仓库优先复用系统 Chrome，不依赖 `playwright install chromium`。
+
+执行需以下环境：
+- macOS 已安装 Google Chrome
+- 依赖安装完成（`npm install --legacy-peer-deps`）
+- DecisionDesk 开发服务器运行中，或直接交给 Playwright 自动拉起
 
 ## 测试用例
 
@@ -34,5 +37,17 @@
 ## 运行
 
 ```bash
-npx playwright test tests/visual/
+npm run test:e2e
+```
+
+如需可视化调试：
+
+```bash
+npm run test:e2e:headed
+```
+
+如系统未安装 Chrome，才需要改回 Playwright 自带浏览器模式，并额外执行：
+
+```bash
+npx playwright install chromium
 ```
