@@ -25,6 +25,7 @@ const multicaBridge = new MulticaBridge();
 type AnalysisInputPanelProps = {
   draftVersion: number;
   locale: Locale;
+  mode?: "draft" | "workspace";
   onTaskStateChange: (state: AnalysisTaskState) => void;
   onStartDraft: () => void;
   reanalysisRequest?: (AnalysisTaskRequest & { requestId: string }) | null;
@@ -33,6 +34,7 @@ type AnalysisInputPanelProps = {
 export function AnalysisInputPanel({
   draftVersion,
   locale,
+  mode = "workspace",
   onTaskStateChange,
   onStartDraft,
   reanalysisRequest = null
@@ -48,6 +50,44 @@ export function AnalysisInputPanel({
   const lastAutoRequestId = useRef<string | null>(null);
   const candidates = useMemo(() => identifyStockCandidates(query), [query]);
   const selected = candidates[0];
+  const draftSuggestions = [
+    t(locale, "draftTaskSuggestionXiaomi"),
+    t(locale, "draftTaskSuggestionAlibaba"),
+    t(locale, "draftTaskSuggestionMoutai")
+  ];
+  const draftTasks = [
+    {
+      badge: t(locale, "draftTaskBadgeResearch"),
+      prompt: t(locale, "draftTaskSuggestionAlibaba"),
+      title: t(locale, "draftTaskCardFocusTitle"),
+      description: t(locale, "draftTaskCardFocusDesc")
+    },
+    {
+      badge: t(locale, "draftTaskBadgeCompare"),
+      prompt: t(locale, "draftTaskSuggestionCompare"),
+      title: t(locale, "draftTaskCardCompareTitle"),
+      description: t(locale, "draftTaskCardCompareDesc")
+    },
+    {
+      badge: t(locale, "draftTaskBadgeRisk"),
+      prompt: t(locale, "draftTaskSuggestionRisk"),
+      title: t(locale, "draftTaskCardRiskTitle"),
+      description: t(locale, "draftTaskCardRiskDesc")
+    }
+  ];
+  const draftPlaybook = [
+    t(locale, "draftTaskPlaybookOne"),
+    t(locale, "draftTaskPlaybookTwo"),
+    t(locale, "draftTaskPlaybookThree")
+  ];
+  const draftSignals = [
+    t(locale, "draftTaskSignalOne"),
+    t(locale, "draftTaskSignalTwo"),
+    t(locale, "draftTaskSignalThree")
+  ];
+  const candidateSummary = candidates.length > 0
+    ? candidates.map((candidate: StockCandidate) => `${candidate.displayName}（${candidate.symbol}）`).join(" / ")
+    : t(locale, "awaitingCandidates");
 
   useEffect(() => {
     setCompareCandidates(createCompareCandidates(candidates));
@@ -156,6 +196,168 @@ export function AnalysisInputPanel({
     } finally {
       setIsComparing(false);
     }
+  }
+
+  if (mode === "draft") {
+    return (
+      <section className="draft-task-shell">
+        <div className="draft-task-overview">
+          <div className="draft-task-hero">
+            <span className="draft-task-kicker">DecisionDesk</span>
+            <h2>{t(locale, "draftTaskTitle")}</h2>
+            <p>{t(locale, "draftTaskDesc")}</p>
+          </div>
+          <div className="draft-task-overview-panel">
+            <span className="status-pill status-pill-info">{t(locale, "draftTaskOverviewLabel")}</span>
+            <h3>{t(locale, "draftTaskOverviewTitle")}</h3>
+            <ul className="draft-task-overview-list">
+              {draftPlaybook.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="draft-task-grid">
+          <aside className="draft-task-sidebar">
+            <section className="draft-task-section-card">
+              <div className="draft-task-section-header">
+                <div>
+                  <strong>{t(locale, "draftTaskTemplatesTitle")}</strong>
+                  <p>{t(locale, "draftTaskTemplatesDesc")}</p>
+                </div>
+              </div>
+              <div className="draft-task-template-list">
+                {draftTasks.map((task) => (
+                  <button
+                    className="draft-task-template-card"
+                    key={task.title}
+                    onClick={() => {
+                      beginManualDraft();
+                      setQuery(task.prompt);
+                    }}
+                    type="button"
+                  >
+                    <span className="draft-task-template-badge">{task.badge}</span>
+                    <strong>{task.title}</strong>
+                    <p>{task.description}</p>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="draft-task-section-card draft-task-section-card-accent">
+              <div className="draft-task-section-header">
+                <div>
+                  <strong>{t(locale, "draftTaskSignalTitle")}</strong>
+                  <p>{t(locale, "draftTaskSignalDesc")}</p>
+                </div>
+              </div>
+              <div className="draft-task-signal-list">
+                {draftSignals.map((signal) => (
+                  <article className="draft-task-signal-item" key={signal}>
+                    <span className="draft-task-signal-dot" />
+                    <p>{signal}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          </aside>
+
+          <div className="draft-task-main">
+            <section className="draft-task-chat-card">
+              <div className="draft-task-chat-header">
+                <div>
+                  <span className="status-pill">{t(locale, "draftTaskChatLabel")}</span>
+                  <h3>{t(locale, "draftTaskChatTitle")}</h3>
+                </div>
+                <p>{t(locale, "draftTaskChatDesc")}</p>
+              </div>
+
+              <div className="draft-task-suggestions">
+                {draftSuggestions.map((suggestion) => (
+                  <button
+                    className="draft-suggestion-chip"
+                    key={suggestion}
+                    onClick={() => {
+                      beginManualDraft();
+                      setQuery(suggestion);
+                    }}
+                    type="button"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+
+              <div className="draft-task-chat-stream">
+                <article className="draft-chat-message draft-chat-message-assistant">
+                  <span>{t(locale, "draftTaskAssistantLabel")}</span>
+                  <p>{t(locale, "draftTaskAssistantMessage")}</p>
+                </article>
+                {query.trim().length > 0 ? (
+                  <article className="draft-chat-message draft-chat-message-user">
+                    <span>{t(locale, "draftTaskUserLabel")}</span>
+                    <p>{query}</p>
+                  </article>
+                ) : (
+                  <article className="draft-chat-message draft-chat-message-placeholder">
+                    <span>{t(locale, "draftTaskUserLabel")}</span>
+                    <p>{t(locale, "draftTaskEmptyMessage")}</p>
+                  </article>
+                )}
+              </div>
+
+              <div className="draft-task-composer">
+                <textarea
+                  className="draft-task-textarea"
+                  onChange={(event) => {
+                    beginManualDraft();
+                    setQuery(event.target.value);
+                  }}
+                  placeholder={t(locale, "queryPlaceholder")}
+                  value={query}
+                />
+                <div className="draft-task-footer">
+                  <div className="draft-task-candidates">
+                    <strong>{t(locale, "draftTaskResolverTitle")}</strong>
+                    <span>{candidateSummary}</span>
+                  </div>
+                  <button
+                    className="primary-button"
+                    disabled={isSubmitting || query.trim().length === 0}
+                    onClick={() => void handleCreateIssue()}
+                    type="button"
+                  >
+                    {isSubmitting ? t(locale, "createIssuePending") : t(locale, "actionStartAnalysis")}
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section className="draft-task-bottom-grid">
+              <article className="draft-task-bottom-card">
+                <span className="status-pill status-pill-neutral">{t(locale, "draftTaskBottomReadyLabel")}</span>
+                <strong>{t(locale, "draftTaskBottomReadyTitle")}</strong>
+                <p>{t(locale, "draftTaskBottomReadyDesc")}</p>
+              </article>
+              <article className="draft-task-bottom-card">
+                <span className="status-pill status-pill-info">{t(locale, "draftTaskBottomHistoryLabel")}</span>
+                <strong>{t(locale, "draftTaskBottomHistoryTitle")}</strong>
+                <p>{t(locale, "draftTaskBottomHistoryDesc")}</p>
+              </article>
+            </section>
+          </div>
+        </div>
+
+        {errorMessage ? (
+          <div className="feedback-card feedback-error">
+            <strong>{t(locale, "createFailed")}</strong>
+            <p>{errorMessage}</p>
+          </div>
+        ) : null}
+      </section>
+    );
   }
 
   return (

@@ -271,28 +271,41 @@ export default function App() {
           selectedEntryId={selectedEntryId}
           watchlistItems={watchlistItems}
         />
-        <main className="workspace-shell">
-          <section className="workspace-center">
+        {isDraftingNewTask ? (
+          <main className="workspace-shell workspace-shell-draft">
             <AnalysisInputPanel
               draftVersion={draftVersion}
               locale={locale}
+              mode="draft"
               onTaskStateChange={handleTaskStateChange}
               onStartDraft={handleStartDraft}
               reanalysisRequest={reanalysisRequest}
             />
-            <ProcessTimeline
+          </main>
+        ) : (
+          <main className="workspace-shell">
+            <section className="workspace-center">
+              <AnalysisInputPanel
+                draftVersion={draftVersion}
+                locale={locale}
+                onTaskStateChange={handleTaskStateChange}
+                onStartDraft={handleStartDraft}
+                reanalysisRequest={reanalysisRequest}
+              />
+              <ProcessTimeline
+                locale={locale}
+                notifications={notifications}
+                watchlistItems={watchlistItems}
+              />
+            </section>
+            <ResultPreviewPane
+              issue={activeEntry?.issue ?? null}
               locale={locale}
-              notifications={notifications}
-              watchlistItems={watchlistItems}
+              quote={watchlistItems.find((item) => item.id === activeEntry?.request.symbol)?.quote ?? null}
+              result={activeEntry?.result ?? null}
             />
-          </section>
-          <ResultPreviewPane
-            issue={activeEntry?.issue ?? null}
-            locale={locale}
-            quote={watchlistItems.find((item) => item.id === activeEntry?.request.symbol)?.quote ?? null}
-            result={activeEntry?.result ?? null}
-          />
-        </main>
+          </main>
+        )}
       </div>
       {hasComplianceAck ? null : (
         <ComplianceNoticeModal
