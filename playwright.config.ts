@@ -2,14 +2,19 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  snapshotPathTemplate: "{snapshotDir}/{testFileDir}/{testFileName}-snapshots/{arg}{ext}",
   timeout: 30_000,
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: "list",
+  expect: {
+    toHaveScreenshot: {
+      animations: "disabled"
+    }
+  },
   use: {
     baseURL: "http://127.0.0.1:4173",
-    channel: "chrome",
     headless: true,
     screenshot: "only-on-failure",
     trace: "retain-on-failure"
@@ -22,9 +27,10 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "chrome",
+      name: "chromium",
       use: {
-        ...devices["Desktop Chrome"]
+        ...devices["Desktop Chrome"],
+        ...(process.env.CI ? { browserName: "chromium" as const } : { channel: "chrome" as const })
       }
     }
   ]

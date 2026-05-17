@@ -4,6 +4,14 @@ import path from "node:path";
 
 export default defineConfig({
   plugins: [react()],
+  test: {
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/dist-electron/**",
+      "**/tests/e2e/**"
+    ]
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src")

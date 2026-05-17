@@ -10,6 +10,7 @@ import {
   RadarController,
   RadialLinearScale,
   ScatterController,
+  TimeScale,
   Tooltip
 } from "chart.js";
 import { Chart, Doughnut, Radar, Scatter } from "react-chartjs-2";
@@ -36,6 +37,7 @@ ChartJS.register(
   RadarController,
   RadialLinearScale,
   ScatterController,
+  TimeScale,
   Tooltip
 );
 
@@ -85,7 +87,18 @@ export function AnalysisCharts({ locale, result }: AnalysisChartsProps) {
               }
             ]
           }}
-          options={{ responsive: true }}
+          options={{
+            parsing: false,
+            responsive: true,
+            scales: {
+              x: {
+                type: "linear"
+              },
+              y: {
+                type: "linear"
+              }
+            }
+          }}
           type="candlestick"
         />
       </article>
