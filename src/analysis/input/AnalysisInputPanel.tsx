@@ -23,17 +23,21 @@ import { identifyStockCandidates, type StockCandidate } from "@/analysis/input/s
 const multicaBridge = new MulticaBridge();
 
 type AnalysisInputPanelProps = {
+  draftVersion: number;
   locale: Locale;
   onTaskStateChange: (state: AnalysisTaskState) => void;
+  onStartDraft: () => void;
   reanalysisRequest?: (AnalysisTaskRequest & { requestId: string }) | null;
 };
 
 export function AnalysisInputPanel({
+  draftVersion,
   locale,
   onTaskStateChange,
+  onStartDraft,
   reanalysisRequest = null
 }: AnalysisInputPanelProps) {
-  const [query, setQuery] = useState(locale === "en-US" ? "Analyze Xiaomi for me" : "帮我分析一下小米");
+  const [query, setQuery] = useState("");
   const [holding, setHolding] = useState<HoldingInput>(EMPTY_HOLDING_INPUT);
   const [compareCandidates, setCompareCandidates] = useState<CompareCandidate[]>([]);
   const [compareResults, setCompareResults] = useState<CompareResultItem[]>([]);
@@ -48,6 +52,21 @@ export function AnalysisInputPanel({
   useEffect(() => {
     setCompareCandidates(createCompareCandidates(candidates));
   }, [candidates]);
+
+  useEffect(() => {
+    setQuery("");
+    setHolding(EMPTY_HOLDING_INPUT);
+    setCompareResults([]);
+    setTaskSummary(null);
+    setErrorMessage("");
+  }, [draftVersion]);
+
+  function beginManualDraft(): void {
+    onStartDraft();
+    setErrorMessage("");
+    setTaskSummary(null);
+    setCompareResults([]);
+  }
 
   async function submitAnalysis(payload: AnalysisTaskRequest): Promise<void> {
     setIsSubmitting(true);
@@ -105,6 +124,9 @@ export function AnalysisInputPanel({
     lastAutoRequestId.current = reanalysisRequest.requestId;
     setQuery(reanalysisRequest.query);
     setHolding(reanalysisRequest.holding);
+    setErrorMessage("");
+    setTaskSummary(null);
+    setCompareResults([]);
     void submitAnalysis(reanalysisRequest);
   }, [reanalysisRequest]);
 
@@ -150,13 +172,16 @@ export function AnalysisInputPanel({
           {t(locale, "stockInputLabel")}
           <input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              beginManualDraft();
+              setQuery(event.target.value);
+            }}
             placeholder={t(locale, "queryPlaceholder")}
           />
         </label>
         <div className="form-row">
           <label>
-            {t(locale, "analysisGenerated")}
+            {t(locale, "detectedTarget")}
             <input value={selected?.displayName ?? t(locale, "awaitingConfirmation")} readOnly />
           </label>
           <label>
@@ -179,10 +204,13 @@ export function AnalysisInputPanel({
             <label className="holding-toggle">
               <input
                 checked={holding.hasPosition}
-                onChange={(event) => setHolding((current) => ({
-                  ...current,
-                  hasPosition: event.target.checked
-                }))}
+                onChange={(event) => {
+                  beginManualDraft();
+                  setHolding((current) => ({
+                    ...current,
+                    hasPosition: event.target.checked
+                  }));
+                }}
                 type="checkbox"
               />
               {t(locale, "hasPosition")}
@@ -192,10 +220,13 @@ export function AnalysisInputPanel({
             <label>
               {t(locale, "costBasis")}
               <input
-                onChange={(event) => setHolding((current) => ({
-                  ...current,
-                  costBasis: event.target.value
-                }))}
+                onChange={(event) => {
+                  beginManualDraft();
+                  setHolding((current) => ({
+                    ...current,
+                    costBasis: event.target.value
+                  }));
+                }}
                 placeholder={t(locale, "costBasisPlaceholder")}
                 value={holding.costBasis}
               />
@@ -203,10 +234,13 @@ export function AnalysisInputPanel({
             <label>
               {t(locale, "positionSize")}
               <input
-                onChange={(event) => setHolding((current) => ({
-                  ...current,
-                  positionSize: event.target.value
-                }))}
+                onChange={(event) => {
+                  beginManualDraft();
+                  setHolding((current) => ({
+                    ...current,
+                    positionSize: event.target.value
+                  }));
+                }}
                 placeholder={t(locale, "positionSizePlaceholder")}
                 value={holding.positionSize}
               />
@@ -215,10 +249,13 @@ export function AnalysisInputPanel({
           <label>
             {t(locale, "sharesHeld")}
             <input
-              onChange={(event) => setHolding((current) => ({
-                ...current,
-                sharesHeld: event.target.value
-              }))}
+              onChange={(event) => {
+                beginManualDraft();
+                setHolding((current) => ({
+                  ...current,
+                  sharesHeld: event.target.value
+                }));
+              }}
               placeholder={t(locale, "sharesHeldPlaceholder")}
               value={holding.sharesHeld}
             />
@@ -283,7 +320,7 @@ export function AnalysisInputPanel({
             {isSubmitting ? t(locale, "createIssuePending") : t(locale, "actionStartAnalysis")}
           </button>
           <button className="secondary-button" type="button">
-            {taskSummary ? t(locale, "analysisGenerated") : t(locale, "candidateLabel")}
+            {taskSummary ? t(locale, "issueCreated") : t(locale, "candidateLabel")}
           </button>
         </div>
       </form>

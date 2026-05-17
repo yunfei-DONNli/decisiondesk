@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently -k \"pnpm dev:renderer\" \"pnpm dev:electron\"",
     "dev:renderer": "vite",
-    "dev:electron": "tsx watch electron/main.ts",
+    "dev:electron": "NODE_OPTIONS=--import=tsx electron electron/main.ts",
     "build": "tsc -b && vite build && tsx scripts/build-electron.ts",
     "preview": "vite preview",
     "lint": "tsc --noEmit",

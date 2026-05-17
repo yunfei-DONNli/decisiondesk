@@ -9,6 +9,18 @@ export type StockCandidate = {
 
 const CANDIDATES: StockCandidate[] = [
   {
+    displayName: "阿里巴巴-W",
+    market: "港股",
+    symbol: "9988.HK",
+    aliases: ["阿里", "阿里巴巴", "阿里巴巴-w", "9988", "9988.hk", "alibaba"]
+  },
+  {
+    displayName: "阿里巴巴",
+    market: "美股",
+    symbol: "BABA",
+    aliases: ["阿里", "阿里巴巴", "baba", "alibaba"]
+  },
+  {
     displayName: "小米集团",
     market: "港股",
     symbol: "1810.HK",
@@ -39,5 +51,5 @@ export function identifyStockCandidates(query: string): StockCandidate[] {
       || normalized.includes(candidate.symbol.toLowerCase())
   );
 
-  return exact.length > 0 ? exact : CANDIDATES.slice(0, 2);
+  return exact;
 }

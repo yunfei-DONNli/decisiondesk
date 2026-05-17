@@ -12,7 +12,7 @@ import type { RealtimeQuote } from "../src/market/realtime/realtime-quote";
 
 const execFileAsync = promisify(execFile);
 const isDev = !app.isPackaged;
-const rendererUrl = process.env.VITE_DEV_SERVER_URL ?? "http://127.0.0.1:5173";
+const rendererUrl = process.env.VITE_DEV_SERVER_URL ?? "http://127.0.0.1:4173";
 
 type MulticaIssueStatus = "queued" | "running" | "completed" | "failed";
 

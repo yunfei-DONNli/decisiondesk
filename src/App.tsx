@@ -81,15 +81,21 @@ export default function App() {
 
     return loadHistoryEntries(window.localStorage)[0]?.id ?? null;
   });
+  const [isDraftingNewTask, setIsDraftingNewTask] = useState(true);
+  const [draftVersion, setDraftVersion] = useState(0);
   const [reanalysisRequest, setReanalysisRequest] = useState<(AnalysisTaskRequest & { requestId: string }) | null>(null);
 
   const activeEntry = useMemo(() => {
+    if (isDraftingNewTask) {
+      return null;
+    }
+
     if (historyEntries.length === 0) {
       return null;
     }
 
     return historyEntries.find((entry) => entry.id === selectedEntryId) ?? historyEntries[0];
-  }, [historyEntries, selectedEntryId]);
+  }, [historyEntries, isDraftingNewTask, selectedEntryId]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -213,10 +219,21 @@ export default function App() {
       body: notification.message,
       title: notification.title
     });
+    setIsDraftingNewTask(false);
     setSelectedEntryId(nextEntry.id);
   }
 
+  function handleStartDraft(): void {
+    setIsDraftingNewTask(true);
+  }
+
+  function handleCreateTask(): void {
+    setIsDraftingNewTask(true);
+    setDraftVersion((current) => current + 1);
+  }
+
   function handleReanalysis(request: AnalysisTaskRequest): void {
+    setIsDraftingNewTask(false);
     setReanalysisRequest({
       ...request,
       language: locale,
@@ -240,20 +257,27 @@ export default function App() {
       <div className="app-shell">
         <Sidebar
           historyEntries={historyEntries}
+          isDraftingNewTask={isDraftingNewTask}
           locale={locale}
           notifications={notifications}
+          onCreateTask={handleCreateTask}
           onRemoveWatchlistItem={handleRemoveWatchlistItem}
           onReanalyze={handleReanalysis}
           onToggleLocale={() => setLocale((current) => current === "zh-CN" ? "en-US" : "zh-CN")}
-          onSelectEntry={setSelectedEntryId}
+          onSelectEntry={(entryId) => {
+            setIsDraftingNewTask(false);
+            setSelectedEntryId(entryId);
+          }}
           selectedEntryId={selectedEntryId}
           watchlistItems={watchlistItems}
         />
         <main className="workspace-shell">
           <section className="workspace-center">
             <AnalysisInputPanel
+              draftVersion={draftVersion}
               locale={locale}
               onTaskStateChange={handleTaskStateChange}
+              onStartDraft={handleStartDraft}
               reanalysisRequest={reanalysisRequest}
             />
             <ProcessTimeline

@@ -95,6 +95,31 @@ input {
   font-weight: 700;
 }
 
+.new-task-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: #f9fafb;
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.new-task-button-active {
+  border-color: rgba(20, 184, 122, 0.35);
+  background: rgba(20, 184, 122, 0.1);
+  color: var(--accent-strong);
+}
+
+.new-task-button-plus {
+  font-size: 22px;
+  line-height: 1;
+}
+
 .sidebar-section {
   display: flex;
   flex-direction: column;

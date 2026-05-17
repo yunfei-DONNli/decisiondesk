@@ -18,8 +18,10 @@ const ROLES = [
 
 type SidebarProps = {
   historyEntries: AnalysisHistoryEntry[];
+  isDraftingNewTask: boolean;
   locale: Locale;
   notifications: AppNotification[];
+  onCreateTask: () => void;
   onRemoveWatchlistItem: (itemId: string) => void;
   onReanalyze: (request: AnalysisTaskRequest) => void;
   onToggleLocale: () => void;
@@ -81,8 +83,10 @@ function formatWatchlistStatus(locale: Locale, status: WatchlistItem["status"]):
 
 export function Sidebar({
   historyEntries,
+  isDraftingNewTask,
   locale,
   notifications,
+  onCreateTask,
   onRemoveWatchlistItem,
   onReanalyze,
   onToggleLocale,
@@ -108,11 +112,20 @@ export function Sidebar({
         {locale === "zh-CN" ? "English" : "中文"}
       </button>
 
+      <button
+        className={`new-task-button ${isDraftingNewTask ? "new-task-button-active" : ""}`}
+        onClick={onCreateTask}
+        type="button"
+      >
+        <span className="new-task-button-plus">+</span>
+        <span>{t(locale, "newTask")}</span>
+      </button>
+
       <section className="sidebar-section">
         <h2>{t(locale, "historyTitle")}</h2>
         <div className="sidebar-task-list">
           {historyEntries.length > 0 ? historyEntries.map((entry) => {
-            const isActive = entry.id === selectedEntryId;
+            const isActive = !isDraftingNewTask && entry.id === selectedEntryId;
             const versionTime = entry.result?.updatedAt ?? entry.createdAt;
 
             return (
