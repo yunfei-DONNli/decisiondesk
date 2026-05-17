@@ -139,6 +139,12 @@ function buildAnalysisPrompt(payload: AnalysisTaskRequest): string {
   return [
     `请对 ${payload.displayName}（${payload.symbol}，${payload.market}）发起一轮完整投研分析。`,
     "",
+    "数据获取要求：",
+    `- 优先使用 AkShare (Python) 获取 ${payload.market} 股票历史K线、财务数据和技术指标`,
+    `- 若 AkShare 获取失败或不支持当前市场，自动切换到 yfinance 作为备选`,
+    "- 新闻和情绪数据使用联网搜索获取",
+    "- 所有数据获取失败时，在 AnalysisResult.sourceSummary 中记录数据缺失情况，不应阻塞分析",
+    "",
     "输出要求：",
     "1. 按技术面、基本面、新闻面、情绪面四个维度给出 0-10 分评分。",
     "2. 汇总多头与空头论点，形成 bullBearDebate。",
