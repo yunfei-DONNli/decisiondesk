@@ -1,0 +1,105 @@
+{
+  "project": "DecisionDesk",
+  "mode": "desktop-local-first",
+  "verifyMode": "quality-first",
+  "execution": {
+    "engine": "multica-codex",
+    "runtime": "multica-self-hosted + codex-cli",
+    "bridge": "DecisionDesk desktop -> Multica API/WebSocket -> Codex Agents",
+    "resultContract": {
+      "name": "AnalysisResult",
+      "required": true,
+      "requiredFields": [
+        "symbol",
+        "market",
+        "language",
+        "generatedAt",
+        "updatedAt",
+        "recommendation",
+        "actionSuggestion",
+        "priceTargets",
+        "stopLoss",
+        "positionSuggestion",
+        "scores",
+        "bullBearDebate",
+        "riskVerdict",
+        "keyEvents",
+        "sourceSummary"
+      ]
+    }
+  },
+  "dataSources": {
+    "primary": [
+      "AkShare",
+      "yfinance"
+    ],
+    "enhanced": [
+      "public web search",
+      "NeoData optional"
+    ]
+  },
+  "reviewerFocus": [
+    "analysis-result-quality",
+    "state-card-consistency",
+    "cross-market-symbol-resolution",
+    "multica-bridge-and-agent-orchestration",
+    "analysisresult-schema-stability",
+    "report-structure-and-legal-phrasing",
+    "history-versioning-and-automation",
+    "data-source-fallback-behavior"
+  ],
+  "testerFocus": [
+    "single-stock-analysis",
+    "watchlist-reassessment",
+    "multi-stock-comparison",
+    "html-export-and-preview",
+    "language-switching",
+    "multica-issue-lifecycle",
+    "codex-agent-result-ingestion"
+  ],
+  "ui": {
+    "required": true,
+    "designContract": ".helloagents/DESIGN.md",
+    "sourcePriority": [
+      "current-prd-decisions",
+      "eng-review.md",
+      "data-source.md",
+      ".helloagents/DESIGN.md",
+      "existing-workbench-prototype"
+    ],
+    "styleAdvisor": {
+      "required": false
+    },
+    "visualValidation": {
+      "required": true,
+      "reason": "Three-pane desktop workbench and report page are core product value.",
+      "screens": [
+        "recent-task-workbench",
+        "expert-team-detail",
+        "single-stock-result-page",
+        "watchlist-list-view",
+        "multi-stock-comparison-result"
+      ],
+      "states": [
+        "queued",
+        "running",
+        "completed",
+        "failed"
+      ]
+    }
+  },
+  "integration": {
+    "multica": {
+      "required": true,
+      "validate": [
+        "self-hosted API reachable",
+        "WebSocket progress stream available",
+        "six official agents routable",
+        "analysis issue can complete end-to-end"
+      ]
+    }
+  },
+  "advisor": {
+    "required": false
+  }
+}

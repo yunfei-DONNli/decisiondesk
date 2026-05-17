@@ -1,0 +1,10 @@
+checks:
+  - name: 文档完整性
+    type: manual
+    target: PRD 13 个维度、tasks.md、decisions.md、contract.json
+  - name: 结构一致性
+    type: manual
+    target: 三栏工作台、结果页状态卡、官方投研团队
+  - name: 合规校验
+    type: manual
+    target: 免责声明、风险提示、非投顾表述
