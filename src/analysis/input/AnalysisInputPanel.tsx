@@ -80,10 +80,29 @@ export function AnalysisInputPanel({
     t(locale, "draftTaskPlaybookTwo"),
     t(locale, "draftTaskPlaybookThree")
   ];
+  const draftStats = [
+    {
+      label: t(locale, "draftTaskStatRoutingLabel"),
+      value: t(locale, "draftTaskStatRoutingValue")
+    },
+    {
+      label: t(locale, "draftTaskStatCoverageLabel"),
+      value: t(locale, "draftTaskStatCoverageValue")
+    },
+    {
+      label: t(locale, "draftTaskStatHandoffLabel"),
+      value: t(locale, "draftTaskStatHandoffValue")
+    }
+  ];
   const draftSignals = [
     t(locale, "draftTaskSignalOne"),
     t(locale, "draftTaskSignalTwo"),
     t(locale, "draftTaskSignalThree")
+  ];
+  const draftChecklist = [
+    t(locale, "draftTaskChecklistOne"),
+    t(locale, "draftTaskChecklistTwo"),
+    t(locale, "draftTaskChecklistThree")
   ];
   const candidateSummary = candidates.length > 0
     ? candidates.map((candidate: StockCandidate) => `${candidate.displayName}（${candidate.symbol}）`).join(" / ")
@@ -203,18 +222,31 @@ export function AnalysisInputPanel({
       <section className="draft-task-shell">
         <div className="draft-task-overview">
           <div className="draft-task-hero">
-            <span className="draft-task-kicker">DecisionDesk</span>
-            <h2>{t(locale, "draftTaskTitle")}</h2>
+            <span className="draft-task-kicker">DecisionDesk / Launch Desk</span>
+            <h2>{t(locale, "draftTaskHeroTitle")}</h2>
             <p>{t(locale, "draftTaskDesc")}</p>
+            <div className="draft-task-overview-list">
+              {draftPlaybook.map((item) => (
+                <article className="draft-task-overview-item" key={item}>
+                  <span />
+                  <p>{item}</p>
+                </article>
+              ))}
+            </div>
           </div>
           <div className="draft-task-overview-panel">
-            <span className="status-pill status-pill-info">{t(locale, "draftTaskOverviewLabel")}</span>
-            <h3>{t(locale, "draftTaskOverviewTitle")}</h3>
-            <ul className="draft-task-overview-list">
-              {draftPlaybook.map((item) => (
-                <li key={item}>{item}</li>
+            <div className="draft-task-overview-panel-header">
+              <span className="status-pill status-pill-info">{t(locale, "draftTaskOverviewLabel")}</span>
+              <h3>{t(locale, "draftTaskOverviewTitle")}</h3>
+            </div>
+            <div className="draft-task-stat-grid">
+              {draftStats.map((item) => (
+                <article className="draft-task-stat-card" key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </article>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
 
@@ -265,16 +297,16 @@ export function AnalysisInputPanel({
           </aside>
 
           <div className="draft-task-main">
-            <section className="draft-task-chat-card">
-              <div className="draft-task-chat-header">
+            <section className="draft-task-console-card">
+              <div className="draft-task-console-header">
                 <div>
-                  <span className="status-pill">{t(locale, "draftTaskChatLabel")}</span>
-                  <h3>{t(locale, "draftTaskChatTitle")}</h3>
+                  <span className="status-pill">{t(locale, "draftTaskConsoleLabel")}</span>
+                  <h3>{t(locale, "draftTaskConsoleTitle")}</h3>
                 </div>
-                <p>{t(locale, "draftTaskChatDesc")}</p>
+                <p>{t(locale, "draftTaskConsoleDesc")}</p>
               </div>
 
-              <div className="draft-task-suggestions">
+              <div className="draft-task-suggestion-row">
                 {draftSuggestions.map((suggestion) => (
                   <button
                     className="draft-suggestion-chip"
@@ -290,25 +322,27 @@ export function AnalysisInputPanel({
                 ))}
               </div>
 
-              <div className="draft-task-chat-stream">
-                <article className="draft-chat-message draft-chat-message-assistant">
+              <div className="draft-task-brief-grid">
+                <article className="draft-task-brief-card draft-task-brief-card-intent">
                   <span>{t(locale, "draftTaskAssistantLabel")}</span>
+                  <strong>{t(locale, "draftTaskCanvasTitle")}</strong>
                   <p>{t(locale, "draftTaskAssistantMessage")}</p>
                 </article>
-                {query.trim().length > 0 ? (
-                  <article className="draft-chat-message draft-chat-message-user">
-                    <span>{t(locale, "draftTaskUserLabel")}</span>
-                    <p>{query}</p>
-                  </article>
-                ) : (
-                  <article className="draft-chat-message draft-chat-message-placeholder">
-                    <span>{t(locale, "draftTaskUserLabel")}</span>
-                    <p>{t(locale, "draftTaskEmptyMessage")}</p>
-                  </article>
-                )}
+                <article className="draft-task-brief-card draft-task-brief-card-query">
+                  <span>{t(locale, "draftTaskUserLabel")}</span>
+                  <strong>{t(locale, "draftTaskDraftLabel")}</strong>
+                  <p>{query.trim().length > 0 ? query : t(locale, "draftTaskEmptyMessage")}</p>
+                </article>
               </div>
 
               <div className="draft-task-composer">
+                <div className="draft-task-composer-header">
+                  <div>
+                    <strong>{t(locale, "draftTaskComposerTitle")}</strong>
+                    <p>{t(locale, "draftTaskComposerDesc")}</p>
+                  </div>
+                  <span className="status-pill status-pill-neutral">{t(locale, "draftTaskChatLabel")}</span>
+                </div>
                 <textarea
                   className="draft-task-textarea"
                   onChange={(event) => {
@@ -345,6 +379,15 @@ export function AnalysisInputPanel({
                 <span className="status-pill status-pill-info">{t(locale, "draftTaskBottomHistoryLabel")}</span>
                 <strong>{t(locale, "draftTaskBottomHistoryTitle")}</strong>
                 <p>{t(locale, "draftTaskBottomHistoryDesc")}</p>
+              </article>
+              <article className="draft-task-bottom-card draft-task-bottom-card-checklist">
+                <span className="status-pill status-pill-info">{t(locale, "draftTaskChecklistLabel")}</span>
+                <strong>{t(locale, "draftTaskChecklistTitle")}</strong>
+                <ul className="draft-task-checklist">
+                  {draftChecklist.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </article>
             </section>
           </div>

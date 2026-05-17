@@ -4,17 +4,17 @@
 
 ```bash
 # 依赖
-Node.js v20+ | pnpm | Python 3.10+ (for AkShare)
+Node.js v22+ | npm | pnpm | Python 3.10+ (for AkShare)
 
 # 安装
-pnpm install
+npm install
 pip3 install akshare yfinance
 
 # 启动开发
-pnpm dev
+npm run dev
 
 # 运行测试
-pnpm test
+npm test
 ```
 
 ## 已知问题
@@ -33,7 +33,7 @@ Cannot find module @rollup/rollup-darwin-arm64
 npm install @rollup/rollup-darwin-arm64 --no-save
 ```
 
-然后重新运行 `pnpm test`。
+然后重新运行 `npm test`。
 
 ## 项目结构
 
@@ -47,7 +47,8 @@ scripts/       构建/同步脚本
 ## 测试
 
 ```bash
-pnpm test          # 全量测试
+npm test           # 全量测试
+npm run test:e2e   # Playwright E2E 与截图回归
 npx vitest run     # 等价
 npx tsc --noEmit   # 类型检查
 ```
